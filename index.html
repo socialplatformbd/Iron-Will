@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-accent="forge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Iron Will — Build Discipline. Become Unbreakable.</title>
+    <meta name="description" content="Iron Will is a private, offline-first habit-breaking and self-discipline app. Your data never leaves your device." />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Iron Will" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <script>
+      // Apply saved theme before first paint to avoid a flash.
+      try {
+        var p = JSON.parse(localStorage.getItem('ironwill:prefs') || '{}');
+        var t = p.theme === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        if (p.accent) document.documentElement.setAttribute('data-accent', p.accent);
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#f6f5f2' : '#0a0a0f');
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Iron Will needs JavaScript to run. Please enable JavaScript in your browser.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
