@@ -25,3 +25,8 @@
 - [ ] Tap "I stayed strong today", reload, and confirm the check-in is kept; tap again to undo.
 - [ ] Open History and confirm the Weekly report numbers look right.
 - [ ] Update over an existing install and confirm earlier data (journal, letters, timer) is still there.
+- [ ] Settings -> Privacy lock: set a PIN, close and reopen the app, confirm the keypad appears and no data is visible behind it.
+- [ ] Enter a wrong PIN 5 times and confirm the pause message and countdown appear.
+- [ ] Switch to another app and return after the auto-lock delay; confirm it locks. Return sooner; confirm it does not.
+- [ ] Change the PIN, then remove it; confirm the keypad no longer appears.
+- [ ] Test "Forgot PIN?" only on test data: it must erase everything and unlock.

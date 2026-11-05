@@ -12,6 +12,7 @@ import { ACCENTS, APP_NAME, APP_VERSION } from '@/data/constants';
 import { cn } from '@/utils/cn';
 
 import { tr } from '@/i18n';
+import { PinLockSettings } from '@/components/PinLockSettings';
 export default function SettingsPage() {
   const { prefs, setTheme, setAccent, setLang, openWelcome } = useApp();
   const { canInstall, installed, install } = useInstallPrompt();
@@ -46,6 +47,11 @@ export default function SettingsPage() {
             ))}
           </div>
         </Card>
+      </section>
+
+      <section>
+        <SectionTitle title={tr("Privacy lock")} />
+        <PinLockSettings />
       </section>
 
       <section>

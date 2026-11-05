@@ -60,6 +60,8 @@ immersive pages, input styling bug, journal date bug, strict backup validation f
 
 **Phase 6 (done, see `PHASE_6_REPORT.md`):** full Bengali interface (English / বাংলা switch in Settings), daily check-in, weekly report.
 
+**Phase 7 (done, see `PHASE_7_REPORT.md`):** optional PIN lock (Settings -> Privacy lock).
+
 **Not built yet:** scheduled reminders / push notifications (a fully offline web app cannot wake itself reliably),
 a dedicated trigger-library screen.
 

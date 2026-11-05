@@ -1,6 +1,6 @@
 export const APP_NAME = 'Iron Will';
 export const APP_TAGLINE = 'Build Discipline. Become Unbreakable.';
-export const APP_VERSION = '1.2.0';
+export const APP_VERSION = '1.3.0';
 export const DEVELOPER_NAME = 'Mohammad Rakib';
 export const DEVELOPER_CREDIT = 'Made by Mohammad Rakib';
 export const TELEGRAM_URL = 'https://t.me/appdevbyrakib';

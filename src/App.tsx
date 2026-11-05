@@ -3,6 +3,8 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AppProvider, useApp } from '@/context/AppContext';
+import { LockProvider, useLock } from '@/context/LockContext';
+import { LockScreen } from '@/components/LockScreen';
 import { AppLayout } from '@/layouts/AppLayout';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingScreen } from '@/components/LoadingScreen';
@@ -49,8 +51,10 @@ function StorageFailure({ message }: { message: string }) {
 
 function Shell() {
   const { ready, fatalError, prefs } = useApp();
+  const { locked } = useLock();
   if (!ready) return <LoadingScreen />;
   if (fatalError) return <StorageFailure message={fatalError} />;
+  if (locked) return <LockScreen key={prefs.lang} />;
   return (
     <HashRouter key={prefs.lang}>
       <Suspense fallback={<PageFallback />}>
@@ -83,7 +87,9 @@ export default function App() {
     <ErrorBoundary>
       <ToastProvider>
         <AppProvider>
-          <Shell />
+          <LockProvider>
+            <Shell />
+          </LockProvider>
         </AppProvider>
       </ToastProvider>
     </ErrorBoundary>
