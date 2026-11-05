@@ -1,0 +1,38 @@
+name: Update from ZIP
+on:
+  push:
+    paths:
+      - '*.zip'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack zip
+        run: |
+          ZIP=$(ls *.zip 2>/dev/null | head -n 1)
+          if [ -z "$ZIP" ]; then echo "No zip found in repo root"; exit 1; fi
+          rm -rf /tmp/new && mkdir /tmp/new
+          unzip -q "$ZIP" -d /tmp/new
+          SRC=/tmp/new
+          [ -d /tmp/new/iron-will-work ] && SRC=/tmp/new/iron-will-work
+          [ -f "$SRC/package.json" ] || { echo "package.json not found in zip"; exit 1; }
+          rm -rf src public
+          cp -r "$SRC"/. .
+          rm -f *.zip
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update from zip"
+          git push
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml
