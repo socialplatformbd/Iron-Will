@@ -4,6 +4,7 @@ import { Card, PageHeader } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { BackLink } from '@/components/ui/BackLink';
 import { useToast } from '@/components/ui/Toast';
+import { useApp } from '@/context/AppContext';
 import { db } from '@/database/db';
 import { sanitizeMultiline } from '@/utils/sanitize';
 
@@ -30,6 +31,7 @@ function elapsedFromDeadline(deadline: number | null): number {
 
 export default function EmergencyPage() {
   const toast = useToast();
+  const { profile } = useApp();
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [reason, setReason] = useState('');
@@ -152,6 +154,19 @@ export default function EmergencyPage() {
         )}
         {complete && <p className="mt-3 text-sm font-semibold text-success">You completed five minutes. Well done.</p>}
       </Card>
+
+      {profile.reasons.length > 0 && (
+        <Card glow>
+          <h3 className="font-semibold">Why you started</h3>
+          <ul className="mt-3 space-y-2">
+            {profile.reasons.map((r, i) => (
+              <li key={`${r}-${i}`} className="rounded-2xl bg-surface2/60 px-4 py-3 text-[15px] font-medium leading-snug">
+                {r}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       <Card>
         <h3 className="font-semibold">A reminder for this moment</h3>

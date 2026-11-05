@@ -20,6 +20,7 @@ const EmergencyPage = lazy(() => import('@/pages/EmergencyPage'));
 const FocusPage = lazy(() => import('@/pages/FocusPage'));
 const CoachPage = lazy(() => import('@/pages/CoachPage'));
 const HistoryPage = lazy(() => import('@/pages/HistoryPage'));
+const LettersPage = lazy(() => import('@/pages/LettersPage'));
 
 function PageFallback() {
   return (
@@ -65,6 +66,7 @@ function Shell() {
             <Route path="focus" element={<FocusPage />} />
             <Route path="coach" element={<CoachPage />} />
             <Route path="history" element={<HistoryPage />} />
+            <Route path="letters" element={<LettersPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

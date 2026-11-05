@@ -4,6 +4,7 @@ import {
   BookOpen,
   Bot,
   Home,
+  Mail,
   Settings,
   Siren,
   Sprout,
@@ -33,6 +34,7 @@ export const SECONDARY_NAV: NavItem[] = [
   { to: '/focus', label: 'Focus Mode', icon: Target },
   { to: '/coach', label: 'AI Coach', icon: Bot },
   { to: '/history', label: 'History', icon: BarChart3 },
+  { to: '/letters', label: 'Letters', icon: Mail },
 ];
 
 /** Routes that render without navigation chrome for a distraction-free experience. */

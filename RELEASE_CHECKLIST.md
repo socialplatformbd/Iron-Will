@@ -16,3 +16,8 @@
 - [ ] Edit a journal entry and confirm its original date is kept (shows "edited").
 - [ ] Import a backup that contains journal, emergency and focus records and confirm they all restore.
 - [ ] Install the PWA and confirm the home-screen icon fills the whole mask shape (no white corners).
+- [ ] Open the app on a phone that already has v1.0 data, update, and confirm old data is still there (Dexie v2 upgrade).
+- [ ] Add a reason in Habit & savings and confirm it shows on Emergency.
+- [ ] Write a letter for Day 1, check it is locked, then confirm a Day "any time" letter opens.
+- [ ] Share an earned badge and check the image looks right.
+- [ ] Long-press the installed icon and confirm the shortcuts appear.

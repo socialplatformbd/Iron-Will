@@ -31,6 +31,7 @@ const LABELS: Record<string, string> = {
   cravings: 'Craving records',
   focusSessions: 'Focus sessions',
   goals: 'Goals',
+  letters: 'Letters to myself',
 };
 
 type Pending = { kind: 'import'; data: ValidatedBackup; filename: string } | { kind: 'restore'; id: number; label: string } | { kind: 'clear' } | null;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BarChart3, Bot, ChevronRight, Play, Siren, Target } from 'lucide-react';
+import { BarChart3, Bot, ChevronRight, Mail, Play, Siren, Target } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
@@ -87,20 +87,21 @@ export default function HomePage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Link to="/coach" className="flex min-h-[72px] items-center gap-3 rounded-3xl border border-line bg-surface p-4 transition active:scale-[0.98] hover:border-accent/40">
-          <Bot className="h-6 w-6 shrink-0 text-accent" />
-          <div className="min-w-0">
-            <div className="text-sm font-bold leading-tight">Coach</div>
-            <div className="text-xs text-muted">Private guidance</div>
-          </div>
+      <div className="grid grid-cols-3 gap-3">
+        <Link to="/coach" className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-3xl border border-line bg-surface p-3 text-center transition active:scale-[0.98] hover:border-accent/40">
+          <Bot className="h-6 w-6 text-accent" />
+          <div className="text-sm font-bold leading-tight">Coach</div>
+          <div className="text-[11px] leading-tight text-muted">Guidance</div>
         </Link>
-        <Link to="/history" className="flex min-h-[72px] items-center gap-3 rounded-3xl border border-line bg-surface p-4 transition active:scale-[0.98] hover:border-accent/40">
-          <BarChart3 className="h-6 w-6 shrink-0 text-accent" />
-          <div className="min-w-0">
-            <div className="text-sm font-bold leading-tight">History</div>
-            <div className="text-xs text-muted">Patterns &amp; insights</div>
-          </div>
+        <Link to="/history" className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-3xl border border-line bg-surface p-3 text-center transition active:scale-[0.98] hover:border-accent/40">
+          <BarChart3 className="h-6 w-6 text-accent" />
+          <div className="text-sm font-bold leading-tight">History</div>
+          <div className="text-[11px] leading-tight text-muted">Insights</div>
+        </Link>
+        <Link to="/letters" className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-3xl border border-line bg-surface p-3 text-center transition active:scale-[0.98] hover:border-accent/40">
+          <Mail className="h-6 w-6 text-accent" />
+          <div className="text-sm font-bold leading-tight">Letters</div>
+          <div className="text-[11px] leading-tight text-muted">To future me</div>
         </Link>
       </div>
 

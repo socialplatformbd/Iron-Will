@@ -2,7 +2,7 @@
  * - Only caches static application files (app shell + icons).
  * - Never touches personal data: that lives in IndexedDB on the user's device.
  */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = `iron-will-${VERSION}`;
 const SHELL = [
   './',

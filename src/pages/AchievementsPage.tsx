@@ -1,7 +1,9 @@
-import { Award, Lock, Star } from 'lucide-react';
+import { Award, Lock, Share2, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, PageHeader, SectionTitle } from '@/components/ui/Card';
 import { useApp } from '@/context/AppContext';
+import { useToast } from '@/components/ui/Toast';
+import { shareBadgeCard } from '@/utils/badgeCard';
 import { useNow } from '@/hooks/useNow';
 import { getMilestoneProgress } from '@/utils/progress';
 import { formatDate, formatDurationLong } from '@/utils/time';
@@ -9,6 +11,15 @@ import { cn } from '@/utils/cn';
 
 export default function AchievementsPage() {
   const { achievements, milestones, startedAt } = useApp();
+  const toast = useToast();
+  const share = async (title: string, days: number) => {
+    try {
+      const result = await shareBadgeCard(title, days);
+      if (result === 'downloaded') toast.success('Badge image saved', 'Only the badge name and day count are on the image.');
+    } catch (err) {
+      if ((err as Error)?.name !== 'AbortError') toast.error('Could not share the badge', (err as Error).message);
+    }
+  };
   const now = useNow(1000);
   const earned = new Map(achievements.map((a) => [a.id, a]));
   const prog = startedAt != null ? getMilestoneProgress(now - startedAt, milestones) : null;
@@ -69,6 +80,11 @@ export default function AchievementsPage() {
                   {m.days} {m.days === 1 ? 'day' : 'days'}
                 </div>
                 <div className="mt-2 text-[11px] leading-snug text-muted">{a ? `Earned ${formatDate(a.unlockedAt)}` : isNext ? 'Up next' : 'Locked'}</div>
+                {a && (
+                  <button onClick={() => void share(m.title, m.days)} className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface2 px-3.5 text-xs font-semibold text-accent">
+                    <Share2 className="h-3.5 w-3.5" /> Share
+                  </button>
+                )}
               </motion.div>
             );
           })}

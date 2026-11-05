@@ -91,3 +91,12 @@ export interface BackupFile {
   data: Record<string, unknown[]>;
   prefs?: Partial<LocalPrefs>;
 }
+
+export interface Letter {
+  id?: number;
+  createdAt: number;
+  title: string;
+  body: string;
+  /** Opens once the streak (or an earned badge) reaches this many days. 0 = always open. */
+  unlockDays: number;
+}

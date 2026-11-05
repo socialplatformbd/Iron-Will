@@ -6,6 +6,7 @@ import type {
   CustomMilestone,
   FavoriteQuote,
   KvRecord,
+  Letter,
   TimerState,
 } from '@/types';
 
@@ -37,6 +38,8 @@ export class IronWillDB extends Dexie {
   goals!: Table<GenericRow, number>;
   treeProgress!: Table<GenericRow, string>;
   recovery!: Table<GenericRow, number>;
+  // Added in v2
+  letters!: Table<Letter, number>;
 
   constructor() {
     super('iron-will-db');
@@ -55,6 +58,10 @@ export class IronWillDB extends Dexie {
       goals: '++id, createdAt',
       treeProgress: 'id',
       recovery: '++id, createdAt',
+    });
+    // v2: letters to your future self (new table only; existing data is untouched).
+    this.version(2).stores({
+      letters: '++id, createdAt, unlockDays',
     });
   }
 }
@@ -76,6 +83,7 @@ export const EXPORTABLE_TABLES = [
   'goals',
   'treeProgress',
   'recovery',
+  'letters',
 ] as const;
 
 export type ExportableTable = (typeof EXPORTABLE_TABLES)[number];

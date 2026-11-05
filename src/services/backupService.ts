@@ -137,6 +137,16 @@ const ROW_VALIDATORS: Partial<Record<(typeof EXPORTABLE_TABLES)[number], (r: Row
           completed: r.completed === true,
         }
       : null,
+  letters: (r) =>
+    isNum(r.createdAt) && typeof r.body === 'string' && sanitizeMultiline(r.body, 5000)
+      ? {
+          ...(isNum(r.id) ? { id: r.id } : {}),
+          createdAt: r.createdAt,
+          title: sanitizeText(r.title, 80) || 'A letter to myself',
+          body: sanitizeMultiline(r.body, 5000),
+          unlockDays: Math.floor(clamp(r.unlockDays, 0, 10000, 0)),
+        }
+      : null,
   // Tables reserved for later phases: keep only plain, sanitised primitive fields.
   triggers: (r) => sanitizeGenericRow(r),
   goals: (r) => sanitizeGenericRow(r),
