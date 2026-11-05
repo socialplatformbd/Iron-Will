@@ -1,38 +1,83 @@
 name: Update from ZIP
 on:
   push:
+    branches: [main]
     paths:
       - '*.zip'
   workflow_dispatch:
 permissions:
   contents: write
   actions: write
+concurrency:
+  group: update-from-zip
+  cancel-in-progress: false
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unpack zip
+        with:
+          fetch-depth: 2
+
+      - name: Find the newest zip
+        id: find
         run: |
-          ZIP=$(ls *.zip 2>/dev/null | head -n 1)
-          if [ -z "$ZIP" ]; then echo "No zip found in repo root"; exit 1; fi
+          shopt -s nullglob
+          zips=( *.zip )
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No .zip file in the repository root. Upload the zip first."
+            exit 0
+          fi
+          chosen="${zips[0]}"
+          while IFS= read -r f; do
+            case "$f" in
+              */*) ;;
+              *.zip) if [ -f "$f" ]; then chosen="$f"; fi ;;
+            esac
+          done < <(git diff --name-only --diff-filter=AM HEAD~1 HEAD 2>/dev/null || true)
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "zip=$chosen" >> "$GITHUB_OUTPUT"
+          echo "Using: $chosen"
+
+      - name: Replace project files with the zip contents
+        if: steps.find.outputs.found == 'true'
+        env:
+          ZIP: ${{ steps.find.outputs.zip }}
+        run: |
           rm -rf /tmp/new && mkdir /tmp/new
-          unzip -q "$ZIP" -d /tmp/new
-          SRC=/tmp/new
-          [ -d /tmp/new/iron-will-work ] && SRC=/tmp/new/iron-will-work
-          [ -f "$SRC/package.json" ] || { echo "package.json not found in zip"; exit 1; }
+          unzip -q -o "$ZIP" -d /tmp/new
+          PKG=$(find /tmp/new -maxdepth 3 -name package.json -not -path '*/node_modules/*' -not -path '*/__MACOSX/*' -print -quit)
+          if [ -z "$PKG" ]; then
+            echo "::error::package.json not found inside $ZIP"
+            exit 1
+          fi
+          SRC=$(dirname "$PKG")
+          echo "Project folder inside zip: $SRC"
           rm -rf src public
-          cp -r "$SRC"/. .
-          rm -f *.zip
-      - name: Commit
+          rsync -a --exclude='.git/' --exclude='.github/' --exclude='node_modules/' --exclude='dist/' "$SRC"/ ./
+          rm -f -- "$ZIP"
+
+      - name: Commit and push
+        id: commit
+        if: steps.find.outputs.found == 'true'
+        env:
+          ZIP: ${{ steps.find.outputs.zip }}
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "Update from zip"
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -q -m "Update from $ZIP"
+          git push origin HEAD:main || { git pull --rebase origin main && git push origin HEAD:main; }
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
       - name: Deploy
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run deploy.yml
+        run: gh workflow run deploy.yml --ref main
