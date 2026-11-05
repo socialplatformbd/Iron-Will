@@ -58,7 +58,9 @@ milestones (+custom), achievements that survive resets, habit tree, money saved,
 immersive pages, input styling bug, journal date bug, strict backup validation for all tables, History charts and
 "when moments get hard" insight, progress sharing, coach safety reply, regenerated maskable/Apple icons.
 
+**Phase 6 (done, see `PHASE_6_REPORT.md`):** full Bengali interface (English / বাংলা switch in Settings), daily check-in, weekly report.
+
 **Not built yet:** scheduled reminders / push notifications (a fully offline web app cannot wake itself reliably),
-shareable badge images, a dedicated trigger-library screen.
+a dedicated trigger-library screen.
 
 > Not yet verified by a real `npm run build` or on-device test: run the checklist in `RELEASE_CHECKLIST.md` first.

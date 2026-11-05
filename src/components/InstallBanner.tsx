@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { useInstallPrompt } from '@/hooks/useInstallPrompt';
 import { useToast } from '@/components/ui/Toast';
 
+import { tr } from '@/i18n';
 /** Shown only when the browser says the app can be installed. */
 export function InstallBanner() {
   const { canInstall, install } = useInstallPrompt();
@@ -15,18 +16,18 @@ export function InstallBanner() {
         <Download className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">Install Iron Will</p>
-        <p className="text-xs text-muted">Add it to your home screen and use it offline.</p>
+        <p className="text-sm font-semibold">{tr("Install Iron Will")}</p>
+        <p className="text-xs text-muted">{tr("Add it to your home screen and use it offline.")}</p>
       </div>
       <Button
         size="sm"
         variant="primary"
         onClick={async () => {
           const ok = await install();
-          if (ok) toast.success('Iron Will installed');
+          if (ok) toast.success(tr("Iron Will installed"));
         }}
       >
-        Install
+        {tr("Install")}
       </Button>
     </Card>
   );

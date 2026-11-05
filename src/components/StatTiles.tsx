@@ -4,6 +4,7 @@ import { useApp } from '@/context/AppContext';
 import { useNow } from '@/hooks/useNow';
 import { computeStats } from '@/utils/progress';
 import { MS_DAY } from '@/data/constants';
+import { tr } from '@/i18n';
 
 function StatTilesBase() {
   const { startedAt, attempts } = useApp();
@@ -22,7 +23,7 @@ function StatTilesBase() {
           <div key={t.label} className="rounded-3xl border border-line bg-surface p-3.5 sm:p-4">
             <Icon className={`mb-2 h-5 w-5 ${t.tone}`} />
             <div className="tabular text-2xl font-extrabold leading-none">{t.value}</div>
-            <div className="mt-1.5 text-[11px] font-medium leading-tight text-muted">{t.label}</div>
+            <div className="mt-1.5 text-[11px] font-medium leading-tight text-muted">{tr(t.label)}</div>
           </div>
         );
       })}

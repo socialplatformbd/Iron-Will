@@ -13,11 +13,13 @@ import {
 import { listFavoriteIds, toggleFavoriteQuote } from '@/services/quoteService';
 import { applyTheme, clearPrefs, DEFAULT_PREFS, loadPrefs, savePrefs, sanitizePrefs } from '@/storage/localPrefs';
 import { useToast } from '@/components/ui/Toast';
+import { tr, setLanguage, trn } from '@/i18n';
 import type {
   AccentId,
   AchievementRecord,
   Attempt,
   CustomMilestone,
+  LangId,
   LocalPrefs,
   Milestone,
   Profile,
@@ -49,6 +51,7 @@ interface AppActions {
   saveProfile: (p: Profile) => Promise<void>;
   setTheme: (t: ThemeMode) => void;
   setAccent: (a: AccentId) => void;
+  setLang: (l: LangId) => void;
   openWelcome: () => void;
   closeWelcome: () => void;
   markWelcomeSeen: () => void;
@@ -64,6 +67,7 @@ type Ctx = AppState & AppActions;
 const AppContext = createContext<Ctx | null>(null);
 
 const INITIAL_PREFS = loadPrefs();
+setLanguage(INITIAL_PREFS.lang);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const toast = useToast();
@@ -127,8 +131,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   /* ---- theme ---- */
   useEffect(() => {
-    applyTheme(state.prefs.theme, state.prefs.accent);
-  }, [state.prefs.theme, state.prefs.accent]);
+    applyTheme(state.prefs.theme, state.prefs.accent, state.prefs.lang);
+  }, [state.prefs.theme, state.prefs.accent, state.prefs.lang]);
 
   /* ---- achievements: check regularly against the real clock ---- */
   const checkAchievements = useCallback(async () => {
@@ -140,8 +144,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const list = await listAchievements();
         patch({ achievements: list });
         const top = [...fresh].sort((a, b) => b.days - a.days)[0];
-        if (fresh.length === 1) toast.achievement(`Achievement unlocked: ${top.title}`, `${top.days} ${top.days === 1 ? 'day' : 'days'} strong. Keep going!`);
-        else toast.achievement(`${fresh.length} achievements unlocked`, `Your highest: ${top.title} (${top.days} days).`);
+        if (fresh.length === 1) toast.achievement(tr('Achievement unlocked: {title}', { title: tr(top.title) }), trn(top.days, '{n} day strong. Keep going!', '{n} days strong. Keep going!'));
+        else toast.achievement(tr('{n} achievements unlocked', { n: fresh.length }), tr('Your highest: {title} ({n} days).', { title: tr(top.title), n: top.days }));
       }
     } catch {
       /* non-fatal */
@@ -162,7 +166,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return await fn();
       } catch (err) {
         const e = err instanceof StorageError ? err : err instanceof Error ? err : toStorageError(err);
-        toast.error('Something went wrong', e.message);
+        toast.error(tr("Something went wrong"), e.message);
         throw e;
       }
     };
@@ -198,6 +202,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }),
       setTheme: (theme) => updatePrefs({ theme }),
       setAccent: (accent) => updatePrefs({ accent }),
+      setLang: (lang) => {
+        setLanguage(lang);
+        updatePrefs({ lang });
+      },
       openWelcome: () => patch({ welcomeOpen: true }),
       closeWelcome: () => {
         updatePrefs({ welcomeSeen: true, communityDismissedAt: Date.now() });
@@ -227,13 +235,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }),
       resetPreferences: () => {
         clearPrefs();
-        const keep: LocalPrefs = { ...DEFAULT_PREFS, welcomeSeen: true, communityDismissedAt: stateRef.current.prefs.communityDismissedAt };
+        const keep: LocalPrefs = { ...DEFAULT_PREFS, lang: stateRef.current.prefs.lang, welcomeSeen: true, communityDismissedAt: stateRef.current.prefs.communityDismissedAt };
         savePrefs(keep);
         patch({ prefs: keep });
       },
       reload: async (importedPrefs) => {
         const data = await loadAll();
         const prefs = { ...stateRef.current.prefs, ...sanitizePrefs(importedPrefs) };
+        setLanguage(prefs.lang);
         savePrefs(prefs);
         patch({ ...data, prefs });
       },
@@ -246,6 +255,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
 export function useApp(): Ctx {
   const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useApp must be used inside AppProvider');
+  if (!ctx) throw new Error(tr("useApp must be used inside AppProvider"));
   return ctx;
 }

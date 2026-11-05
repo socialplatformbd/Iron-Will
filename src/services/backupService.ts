@@ -5,6 +5,7 @@ import { normalizeProfile } from '@/services/profileService';
 import type { BackupFile, BackupSnapshot } from '@/types';
 import { sanitizeMultiline, sanitizeText } from '@/utils/sanitize';
 
+import { tr } from '@/i18n';
 export const BACKUP_SCHEMA_VERSION = 1;
 const MAX_BACKUP_BYTES = 30 * 1024 * 1024;
 const MAX_SNAPSHOTS = 5;
@@ -27,7 +28,7 @@ export async function buildBackup(): Promise<BackupFile> {
     appVersion: APP_VERSION,
     exportedAt: new Date().toISOString(),
     data,
-    prefs: { theme: prefs.theme, accent: prefs.accent },
+    prefs: { theme: prefs.theme, accent: prefs.accent, lang: prefs.lang },
   };
 }
 
@@ -137,6 +138,10 @@ const ROW_VALIDATORS: Partial<Record<(typeof EXPORTABLE_TABLES)[number], (r: Row
           completed: r.completed === true,
         }
       : null,
+  checkins: (r) =>
+    typeof r.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(r.day) && !Number.isNaN(Date.parse(r.day))
+      ? { day: r.day, createdAt: isNum(r.createdAt) ? r.createdAt : Date.now() }
+      : null,
   letters: (r) =>
     isNum(r.createdAt) && typeof r.body === 'string' && sanitizeMultiline(r.body, 5000)
       ? {
@@ -165,11 +170,11 @@ export interface ValidatedBackup {
 /** Strictly validate a parsed backup. Throws StorageError('invalid') with a readable message. */
 export function validateBackup(parsed: unknown): ValidatedBackup {
   const bad = (m: string) => new StorageError(m, 'invalid');
-  if (!isObj(parsed)) throw bad('This file is not a valid Iron Will backup.');
-  if (parsed.app !== 'iron-will') throw bad('This file was not created by Iron Will.');
-  if (!isNum(parsed.schemaVersion) || parsed.schemaVersion < 1) throw bad('Backup is missing a valid version number.');
-  if (parsed.schemaVersion > BACKUP_SCHEMA_VERSION) throw bad('This backup was made by a newer version of Iron Will. Please update the app first.');
-  if (!isObj(parsed.data)) throw bad('Backup data section is missing.');
+  if (!isObj(parsed)) throw bad(tr("This file is not a valid Iron Will backup."));
+  if (parsed.app !== 'iron-will') throw bad(tr("This file was not created by Iron Will."));
+  if (!isNum(parsed.schemaVersion) || parsed.schemaVersion < 1) throw bad(tr("Backup is missing a valid version number."));
+  if (parsed.schemaVersion > BACKUP_SCHEMA_VERSION) throw bad(tr("This backup was made by a newer version of Iron Will. Please update the app first."));
+  if (!isObj(parsed.data)) throw bad(tr("Backup data section is missing."));
 
   const data: Record<string, Row[]> = {};
   const counts: Record<string, number> = {};
@@ -181,7 +186,7 @@ export function validateBackup(parsed: unknown): ValidatedBackup {
       counts[name] = 0;
       continue;
     }
-    if (!Array.isArray(rows)) throw bad(`Backup section "${name}" is malformed.`);
+    if (!Array.isArray(rows)) throw bad(tr('Backup section "{name}" is malformed.', { name }));
     const validator = ROW_VALIDATORS[name];
     const clean: Row[] = [];
     for (const r of rows) {
@@ -206,12 +211,12 @@ export function validateBackup(parsed: unknown): ValidatedBackup {
 }
 
 export function parseBackupText(text: string): ValidatedBackup {
-  if (text.length > MAX_BACKUP_BYTES) throw new StorageError('This file is too large to be an Iron Will backup.', 'invalid');
+  if (text.length > MAX_BACKUP_BYTES) throw new StorageError(tr("This file is too large to be an Iron Will backup."), 'invalid');
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
   } catch {
-    throw new StorageError('This file is not valid JSON.', 'invalid');
+    throw new StorageError(tr("This file is not valid JSON."), 'invalid');
   }
   return validateBackup(parsed);
 }
@@ -279,7 +284,7 @@ export async function importBackupText(text: string): Promise<ImportResult> {
 
 export async function restoreSnapshot(id: number): Promise<ImportResult> {
   const snap = await safe(() => db.backups.get(id));
-  if (!snap) throw new StorageError('That backup no longer exists.', 'invalid');
+  if (!snap) throw new StorageError(tr("That backup no longer exists."), 'invalid');
   return applyBackup(parseBackupText(snap.json), 'Before restore');
 }
 

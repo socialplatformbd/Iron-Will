@@ -19,6 +19,8 @@
         var t = p.theme === 'light' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', t);
         if (p.accent) document.documentElement.setAttribute('data-accent', p.accent);
+        if (p.lang === 'bn' || p.lang === 'en') document.documentElement.setAttribute('lang', p.lang);
+        else if ((navigator.language || '').toLowerCase().indexOf('bn') === 0) document.documentElement.setAttribute('lang', 'bn');
         var m = document.querySelector('meta[name="theme-color"]');
         if (m) m.setAttribute('content', t === 'light' ? '#f6f5f2' : '#0a0a0f');
       } catch (e) {}

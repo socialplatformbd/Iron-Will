@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
+import { tr } from '@/i18n';
 interface State {
   error: Error | null;
 }
@@ -24,13 +25,13 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-danger/15 text-danger">
           <AlertTriangle className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-bold">Something went wrong</h1>
-        <p className="mt-2 max-w-sm text-sm text-muted">Your data is safe on this device. Reloading usually fixes this.</p>
+        <h1 className="text-xl font-bold">{tr("Something went wrong")}</h1>
+        <p className="mt-2 max-w-sm text-sm text-muted">{tr("Your data is safe on this device. Reloading usually fixes this.")}</p>
         <button
           onClick={() => window.location.reload()}
           className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-accent px-6 font-semibold text-onaccent"
         >
-          <RefreshCw className="h-4 w-4" /> Reload app
+          <RefreshCw className="h-4 w-4" /> {tr("Reload app")}
         </button>
       </div>
     );

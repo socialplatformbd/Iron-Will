@@ -1,4 +1,5 @@
 import { MS_DAY, MS_HOUR, MS_MINUTE, MS_SECOND } from '@/data/constants';
+import { tr, trn } from '@/i18n';
 
 export interface DurationParts {
   days: number;
@@ -23,20 +24,20 @@ export const pad2 = (n: number) => String(n).padStart(2, '0');
 /** "3d 4h 12m" style label (largest two relevant units). */
 export function formatDurationShort(ms: number): string {
   const { days, hours, minutes, seconds } = splitDuration(ms);
-  if (days > 0) return `${days}d ${hours}h`;
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  if (minutes > 0) return `${minutes}m ${seconds}s`;
-  return `${seconds}s`;
+  if (days > 0) return `${days}${tr('d')} ${hours}${tr('h')}`;
+  if (hours > 0) return `${hours}${tr('h')} ${minutes}${tr('m')}`;
+  if (minutes > 0) return `${minutes}${tr('m')} ${seconds}${tr('s')}`;
+  return `${seconds}${tr('s')}`;
 }
 
 /** Long label: "2 days, 3 hours". */
 export function formatDurationLong(ms: number): string {
   const { days, hours, minutes } = splitDuration(ms);
   const parts: string[] = [];
-  if (days) parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
-  if (hours) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
-  if (!days && minutes) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-  return parts.length ? parts.join(', ') : 'less than a minute';
+  if (days) parts.push(trn(days, '{n} day', '{n} days'));
+  if (hours) parts.push(trn(hours, '{n} hour', '{n} hours'));
+  if (!days && minutes) parts.push(trn(minutes, '{n} minute', '{n} minutes'));
+  return parts.length ? parts.join(tr(', ')) : tr('less than a minute');
 }
 
 export function daysFromMs(ms: number): number {
@@ -74,8 +75,8 @@ export function localDayNumber(ts = Date.now()): number {
 
 export function greetingFor(date = new Date()): string {
   const h = date.getHours();
-  if (h < 5) return 'Still up? Stay strong';
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
+  if (h < 5) return tr('Still up? Stay strong');
+  if (h < 12) return tr('Good morning');
+  if (h < 18) return tr('Good afternoon');
+  return tr('Good evening');
 }

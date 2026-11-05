@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState, type
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Info, Trophy } from 'lucide-react';
 
+import { tr } from '@/i18n';
 type ToastKind = 'success' | 'error' | 'info' | 'achievement';
 interface ToastItem {
   id: number;
@@ -84,6 +85,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function useToast(): ToastApi {
   const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToast must be used inside ToastProvider');
+  if (!ctx) throw new Error(tr("useToast must be used inside ToastProvider"));
   return ctx;
 }

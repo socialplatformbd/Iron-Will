@@ -2,14 +2,15 @@ import { db, safe } from '@/database/db';
 import type { Attempt, TimerState } from '@/types';
 import { sanitizeText } from '@/utils/sanitize';
 
+import { tr } from '@/i18n';
 export async function getTimer(): Promise<TimerState | undefined> {
   return safe(() => db.timer.get('main'));
 }
 
 /** Start (or re-start from a stopped state) the timer at a given real timestamp. */
 export async function startTimer(startedAt: number): Promise<TimerState> {
-  if (!Number.isFinite(startedAt)) throw new Error('Invalid start time.');
-  if (startedAt > Date.now() + 60_000) throw new Error('The start time cannot be in the future.');
+  if (!Number.isFinite(startedAt)) throw new Error(tr("Invalid start time."));
+  if (startedAt > Date.now() + 60_000) throw new Error(tr("The start time cannot be in the future."));
   const state: TimerState = { id: 'main', startedAt, updatedAt: Date.now() };
   await safe(() => db.timer.put(state));
   return state;

@@ -11,6 +11,7 @@ import { formatDate } from '@/utils/time';
 import { cn } from '@/utils/cn';
 import type { Letter } from '@/types';
 
+import { tr, trn } from '@/i18n';
 export default function LettersPage() {
   const { startedAt, achievements, milestones } = useApp();
   const toast = useToast();
@@ -26,7 +27,7 @@ export default function LettersPage() {
     try {
       setLetters(await listLetters());
     } catch (err) {
-      toast.error('Could not load your letters', (err as Error).message);
+      toast.error(tr("Could not load your letters"), (err as Error).message);
     }
   }, [toast]);
 
@@ -45,60 +46,60 @@ export default function LettersPage() {
       await addLetter({ title, body, unlockDays });
       setTitle('');
       setBody('');
-      toast.success('Letter sealed', unlockDays === 0 ? 'You can open it any time.' : `It will open at day ${unlockDays}.`);
+      toast.success(tr("Letter sealed"), unlockDays === 0 ? tr('You can open it any time.') : tr('It will open at day {n}.', { n: unlockDays }));
       await refresh();
     } catch (err) {
-      toast.error('Could not save the letter', (err as Error).message);
+      toast.error(tr("Could not save the letter"), (err as Error).message);
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async (id: number) => {
-    if (!window.confirm('Delete this letter? This cannot be undone.')) return;
+    if (!window.confirm(tr("Delete this letter? This cannot be undone."))) return;
     try {
       await deleteLetter(id);
       if (openId === id) setOpenId(null);
       await refresh();
     } catch (err) {
-      toast.error('Could not delete the letter', (err as Error).message);
+      toast.error(tr("Could not delete the letter"), (err as Error).message);
     }
   };
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Letters to Myself" subtitle="Write to your future self. A letter opens when you reach the day you choose." />
+      <PageHeader title={tr("Letters to Myself")} subtitle={tr("Write to your future self. A letter opens when you reach the day you choose.")} />
 
       <Card>
-        <h2 className="mb-4 font-semibold">Write a new letter</h2>
+        <h2 className="mb-4 font-semibold">{tr("Write a new letter")}</h2>
         <label className="block text-sm">
-          Title
-          <input className="field mt-1 w-full" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} placeholder="A letter to myself" />
+          {tr("Title")}
+          <input className="field mt-1 w-full" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} placeholder={tr("A letter to myself")} />
         </label>
         <label className="mt-3 block text-sm">
-          Your message
-          <textarea className="field mt-1 min-h-32 w-full" value={body} onChange={(e) => setBody(e.target.value)} maxLength={5000} placeholder="Remind yourself why you started, what it cost you, and what you are proud of..." />
+          {tr("Your message")}
+          <textarea className="field mt-1 min-h-32 w-full" value={body} onChange={(e) => setBody(e.target.value)} maxLength={5000} placeholder={tr("Remind yourself why you started, what it cost you, and what you are proud of...")} />
         </label>
         <label className="mt-3 block text-sm">
-          Opens on
+          {tr("Opens on")}
           <select className="field mt-1 w-full" value={unlockDays} onChange={(e) => setUnlockDays(Number(e.target.value))}>
             {options.map((d) => (
               <option key={d} value={d}>
-                {d === 0 ? 'Any time (a note for hard moments)' : `Day ${d}`}
+                {d === 0 ? tr("Any time (a note for hard moments)") : tr('Day {n}', { n: d })}
               </option>
             ))}
           </select>
         </label>
         <Button className="mt-4" onClick={() => void save()} disabled={!body.trim() || saving}>
           <Plus className="mr-1 h-4 w-4" />
-          Seal letter
+          {tr("Seal letter")}
         </Button>
-        <p className="mt-3 text-xs leading-relaxed text-muted">Letters stay on this device and are included in your JSON backup. Sealing is a promise to yourself; you can still delete a letter.</p>
+        <p className="mt-3 text-xs leading-relaxed text-muted">{tr("Letters stay on this device and are included in your JSON backup. Sealing is a promise to yourself; you can still delete a letter.")}</p>
       </Card>
 
       {letters.length === 0 ? (
         <Card>
-          <EmptyState icon={<Mail />} title="No letters yet" text="Write one now. Reading it on a milestone day, in your own words, can be a powerful moment." />
+          <EmptyState icon={<Mail />} title={tr("No letters yet")} text={tr("Write one now. Reading it on a milestone day, in your own words, can be a powerful moment.")} />
         </Card>
       ) : (
         letters.map((l) => {
@@ -114,25 +115,25 @@ export default function LettersPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-semibold">{l.title}</div>
-                  <div className="text-xs text-muted">Written {formatDate(l.createdAt)}</div>
+                  <div className="text-xs text-muted">{tr("Written")} {formatDate(l.createdAt)}</div>
                   <div className="mt-1 text-xs text-muted">
                     {unlocked
                       ? l.unlockDays === 0
-                        ? 'Open any time'
-                        : `Opened at day ${l.unlockDays}`
+                        ? tr("Open any time")
+                        : tr('Opened at day {n}', { n: l.unlockDays })
                       : startedAt == null
-                        ? `Opens at day ${l.unlockDays}. Start your timer to begin.`
-                        : `Opens at day ${l.unlockDays} · ${remaining} ${remaining === 1 ? 'day' : 'days'} to go`}
+                        ? tr('Opens at day {n}. Start your timer to begin.', { n: l.unlockDays })
+                        : trn(remaining, 'Opens at day {d} · {n} day to go', 'Opens at day {d} · {n} days to go', { d: l.unlockDays })}
                   </div>
                 </div>
-                <button aria-label="Delete letter" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-surface2 hover:text-danger" onClick={() => void remove(id)}>
+                <button aria-label={tr("Delete letter")} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-surface2 hover:text-danger" onClick={() => void remove(id)}>
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
               {unlocked && (
                 <>
                   <button className="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-accent" onClick={() => setOpenId(open ? null : id)} aria-expanded={open}>
-                    {open ? 'Hide letter' : 'Read letter'}
+                    {open ? tr("Hide letter") : tr("Read letter")}
                     <ChevronDown className={cn('h-4 w-4 transition', open && 'rotate-180')} />
                   </button>
                   {open && <p className="mt-2 whitespace-pre-wrap rounded-2xl bg-surface2/60 p-4 text-sm leading-relaxed">{l.body}</p>}

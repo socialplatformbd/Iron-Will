@@ -2,15 +2,16 @@ import { db, safe } from '@/database/db';
 import type { Letter } from '@/types';
 import { sanitizeMultiline, sanitizeText } from '@/utils/sanitize';
 
+import { tr } from '@/i18n';
 export async function listLetters(): Promise<Letter[]> {
   return safe(() => db.letters.orderBy('createdAt').reverse().toArray());
 }
 
 export async function addLetter(input: { title: string; body: string; unlockDays: number }): Promise<void> {
   const body = sanitizeMultiline(input.body, 5000);
-  if (!body) throw new Error('Write something to your future self first.');
+  if (!body) throw new Error(tr("Write something to your future self first."));
   const unlockDays = Math.floor(input.unlockDays);
-  if (!Number.isFinite(unlockDays) || unlockDays < 0 || unlockDays > 10000) throw new Error('Choose a valid opening day.');
+  if (!Number.isFinite(unlockDays) || unlockDays < 0 || unlockDays > 10000) throw new Error(tr("Choose a valid opening day."));
   const record: Letter = {
     createdAt: Date.now(),
     title: sanitizeText(input.title, 80) || 'A letter to myself',

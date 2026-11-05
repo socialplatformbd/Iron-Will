@@ -9,15 +9,16 @@ import { getMilestoneProgress } from '@/utils/progress';
 import { formatDate, formatDurationLong } from '@/utils/time';
 import { cn } from '@/utils/cn';
 
+import { tr } from '@/i18n';
 export default function AchievementsPage() {
   const { achievements, milestones, startedAt } = useApp();
   const toast = useToast();
   const share = async (title: string, days: number) => {
     try {
       const result = await shareBadgeCard(title, days);
-      if (result === 'downloaded') toast.success('Badge image saved', 'Only the badge name and day count are on the image.');
+      if (result === 'downloaded') toast.success(tr("Badge image saved"), tr("Only the badge name and day count are on the image."));
     } catch (err) {
-      if ((err as Error)?.name !== 'AbortError') toast.error('Could not share the badge', (err as Error).message);
+      if ((err as Error)?.name !== 'AbortError') toast.error(tr("Could not share the badge"), (err as Error).message);
     }
   };
   const now = useNow(1000);
@@ -28,7 +29,7 @@ export default function AchievementsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Achievements" subtitle="Badges you earn are yours forever, even after a reset." />
+      <PageHeader title={tr("Achievements")} subtitle={tr("Badges you earn are yours forever, even after a reset.")} />
 
       <Card glow>
         <div className="flex items-center gap-4">
@@ -40,7 +41,7 @@ export default function AchievementsPage() {
               {count}
               <span className="text-lg font-semibold text-muted"> / {total}</span>
             </div>
-            <div className="mt-1 text-sm text-muted">badges collected</div>
+            <div className="mt-1 text-sm text-muted">{tr("badges collected")}</div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface2">
               <motion.div className="h-full rounded-full bg-gradient-accent" initial={{ width: 0 }} animate={{ width: `${total ? (count / total) * 100 : 0}%` }} transition={{ duration: 0.9 }} />
             </div>
@@ -48,14 +49,14 @@ export default function AchievementsPage() {
         </div>
         {prog?.next && (
           <p className="mt-4 rounded-2xl bg-surface2/60 px-4 py-3 text-sm">
-            Next: <span className="font-semibold">{prog.next.title}</span> in <span className="font-semibold">{formatDurationLong(prog.remainingMs)}</span>
+            {tr('Next: {title} in {time}', { title: tr(prog.next.title), time: formatDurationLong(prog.remainingMs) })}
           </p>
         )}
-        {startedAt == null && <p className="mt-4 text-sm text-muted">Start your timer to begin earning badges.</p>}
+        {startedAt == null && <p className="mt-4 text-sm text-muted">{tr("Start your timer to begin earning badges.")}</p>}
       </Card>
 
       <section>
-        <SectionTitle title="Badge collection" />
+        <SectionTitle title={tr("Badge collection")} />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {milestones.map((m, i) => {
             const a = earned.get(m.id);
@@ -75,14 +76,14 @@ export default function AchievementsPage() {
                 <div className={cn('mb-3 flex h-16 w-16 items-center justify-center rounded-full', a ? 'bg-gradient-accent text-onaccent' : 'bg-surface2 text-muted/60')}>
                   {a ? <Award className="h-8 w-8" /> : <Lock className="h-6 w-6" />}
                 </div>
-                <div className={cn('text-[15px] font-bold', !a && 'text-muted')}>{m.title}</div>
+                <div className={cn('text-[15px] font-bold', !a && 'text-muted')}>{tr(m.title)}</div>
                 <div className="mt-0.5 text-xs text-muted">
-                  {m.days} {m.days === 1 ? 'day' : 'days'}
+                  {m.days} {m.days === 1 ? tr("day") : tr("days")}
                 </div>
-                <div className="mt-2 text-[11px] leading-snug text-muted">{a ? `Earned ${formatDate(a.unlockedAt)}` : isNext ? 'Up next' : 'Locked'}</div>
+                <div className="mt-2 text-[11px] leading-snug text-muted">{a ? `Earned ${formatDate(a.unlockedAt)}` : isNext ? tr("Up next") : tr("Locked")}</div>
                 {a && (
-                  <button onClick={() => void share(m.title, m.days)} className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface2 px-3.5 text-xs font-semibold text-accent">
-                    <Share2 className="h-3.5 w-3.5" /> Share
+                  <button onClick={() => void share(tr(m.title), m.days)} className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface2 px-3.5 text-xs font-semibold text-accent">
+                    <Share2 className="h-3.5 w-3.5" /> {tr("Share")}
                   </button>
                 )}
               </motion.div>
@@ -92,17 +93,17 @@ export default function AchievementsPage() {
       </section>
 
       <section>
-        <SectionTitle title="Achievement history" />
+        <SectionTitle title={tr("Achievement history")} />
         <Card padded={false}>
           {achievements.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-muted">Nothing unlocked yet. Your first badge is just one day away.</p>
+            <p className="px-5 py-8 text-center text-sm text-muted">{tr("Nothing unlocked yet. Your first badge is just one day away.")}</p>
           ) : (
             <ul className="divide-y divide-line">
               {achievements.map((a) => (
                 <li key={a.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
                   <div className="flex min-w-0 items-center gap-3">
                     <Award className="h-5 w-5 shrink-0 text-accent" />
-                    <span className="truncate font-semibold">{a.title}</span>
+                    <span className="truncate font-semibold">{tr(a.title)}</span>
                   </div>
                   <span className="shrink-0 text-xs text-muted">{formatDate(a.unlockedAt, true)}</span>
                 </li>

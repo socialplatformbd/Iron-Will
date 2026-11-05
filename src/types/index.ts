@@ -73,11 +73,13 @@ export interface BackupSnapshot {
 }
 
 export type ThemeMode = 'dark' | 'light';
+export type LangId = 'en' | 'bn';
 export type AccentId = 'forge' | 'emerald' | 'sky' | 'violet' | 'rose';
 
 export interface LocalPrefs {
   theme: ThemeMode;
   accent: AccentId;
+  lang: LangId;
   welcomeSeen: boolean;
   communityDismissedAt: number | null;
   lastQuoteSeen?: string;
@@ -99,4 +101,10 @@ export interface Letter {
   body: string;
   /** Opens once the streak (or an earned badge) reaches this many days. 0 = always open. */
   unlockDays: number;
+}
+
+export interface CheckIn {
+  /** Local calendar day, YYYY-MM-DD. */
+  day: string;
+  createdAt: number;
 }

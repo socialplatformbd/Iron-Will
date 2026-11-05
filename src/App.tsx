@@ -10,6 +10,7 @@ import { WelcomeModal } from '@/components/WelcomeModal';
 import { RecoveryModal } from '@/components/ResetModal';
 import HomePage from '@/pages/HomePage';
 
+import { tr } from '@/i18n';
 const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
 const AchievementsPage = lazy(() => import('@/pages/AchievementsPage'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
@@ -36,22 +37,22 @@ function StorageFailure({ message }: { message: string }) {
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-danger/15 text-danger">
         <AlertTriangle className="h-8 w-8" />
       </div>
-      <h1 className="text-xl font-bold">Local storage is unavailable</h1>
+      <h1 className="text-xl font-bold">{tr("Local storage is unavailable")}</h1>
       <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted">{message}</p>
-      <p className="mt-2 max-w-sm text-xs text-muted">Iron Will stores everything on your device, so it needs IndexedDB. Try a normal (non-private) browser window.</p>
+      <p className="mt-2 max-w-sm text-xs text-muted">{tr("Iron Will stores everything on your device, so it needs IndexedDB. Try a normal (non-private) browser window.")}</p>
       <button onClick={() => window.location.reload()} className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-accent px-6 font-semibold text-onaccent">
-        <RefreshCw className="h-4 w-4" /> Try again
+        <RefreshCw className="h-4 w-4" /> {tr("Try again")}
       </button>
     </div>
   );
 }
 
 function Shell() {
-  const { ready, fatalError } = useApp();
+  const { ready, fatalError, prefs } = useApp();
   if (!ready) return <LoadingScreen />;
   if (fatalError) return <StorageFailure message={fatalError} />;
   return (
-    <HashRouter>
+    <HashRouter key={prefs.lang}>
       <Suspense fallback={<PageFallback />}>
         <Routes>
           <Route element={<AppLayout />}>

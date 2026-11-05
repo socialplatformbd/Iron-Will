@@ -3,6 +3,7 @@ import type {
   AchievementRecord,
   Attempt,
   BackupSnapshot,
+  CheckIn,
   CustomMilestone,
   FavoriteQuote,
   KvRecord,
@@ -10,6 +11,7 @@ import type {
   TimerState,
 } from '@/types';
 
+import { tr } from '@/i18n';
 /**
  * IRON WILL local database (IndexedDB via Dexie).
  * Everything here lives only on the user's device. No remote sync of any kind.
@@ -40,6 +42,8 @@ export class IronWillDB extends Dexie {
   recovery!: Table<GenericRow, number>;
   // Added in v2
   letters!: Table<Letter, number>;
+  // Added in v3
+  checkins!: Table<CheckIn, string>;
 
   constructor() {
     super('iron-will-db');
@@ -63,6 +67,10 @@ export class IronWillDB extends Dexie {
     this.version(2).stores({
       letters: '++id, createdAt, unlockDays',
     });
+    // v3: daily check-ins, one row per local calendar day.
+    this.version(3).stores({
+      checkins: 'day',
+    });
   }
 }
 
@@ -84,6 +92,7 @@ export const EXPORTABLE_TABLES = [
   'treeProgress',
   'recovery',
   'letters',
+  'checkins',
 ] as const;
 
 export type ExportableTable = (typeof EXPORTABLE_TABLES)[number];
@@ -105,17 +114,17 @@ export function toStorageError(err: unknown): StorageError {
   const msg = (err as { message?: string })?.message ?? '';
   if (name === 'QuotaExceededError' || /quota/i.test(name + msg)) {
     return new StorageError(
-      'Your device is out of storage space for this app. Free some space or export a backup and clear old data.',
+      tr("Your device is out of storage space for this app. Free some space or export a backup and clear old data."),
       'quota'
     );
   }
   if (name === 'InvalidStateError' || name === 'SecurityError' || name === 'OpenFailedError' || /indexeddb/i.test(msg)) {
     return new StorageError(
-      'Local storage is unavailable in this browser mode (private browsing may block it). Your progress cannot be saved.',
+      tr("Local storage is unavailable in this browser mode (private browsing may block it). Your progress cannot be saved."),
       'unavailable'
     );
   }
-  return new StorageError(msg || 'An unexpected storage error occurred.', 'unknown');
+  return new StorageError(msg || tr('An unexpected storage error occurred.'), 'unknown');
 }
 
 /** Wrap a DB operation so every failure is normalised. */

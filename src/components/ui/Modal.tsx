@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
+import { tr } from '@/i18n';
 interface ModalProps {
   open: boolean;
   onClose: () => void;
@@ -83,7 +84,7 @@ export function Modal({ open, onClose, title, children, hideClose, className, di
                 {!hideClose && (
                   <button
                     onClick={onClose}
-                    aria-label="Close"
+                    aria-label={tr("Close")}
                     className="-mr-1 -mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted transition hover:bg-surface2 hover:text-ink"
                   >
                     <X className="h-5 w-5" />

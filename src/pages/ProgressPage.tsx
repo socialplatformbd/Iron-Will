@@ -16,6 +16,7 @@ import { formatDate, formatDurationLong, formatDurationShort } from '@/utils/tim
 import { MS_DAY } from '@/data/constants';
 import { cn } from '@/utils/cn';
 
+import { tr, trn } from '@/i18n';
 export default function ProgressPage() {
   const { startedAt, milestones, attempts, achievements, addMilestone, removeMilestone } = useApp();
   const toast = useToast();
@@ -30,7 +31,7 @@ export default function ProgressPage() {
     e.preventDefault();
     try {
       await addMilestone(parseInt(days, 10), title);
-      toast.success('Custom milestone added');
+      toast.success(tr("Custom milestone added"));
       setDays('');
       setTitle('');
     } catch {
@@ -40,32 +41,32 @@ export default function ProgressPage() {
 
   const shareProgress = async () => {
     const dayCount = Math.floor(stats.currentMs / MS_DAY);
-    const text = `I am ${dayCount} ${dayCount === 1 ? 'day' : 'days'} strong with Iron Will. Build Discipline. Become Unbreakable.`;
+    const text = trn(dayCount, 'I am {n} day strong with Iron Will. Build Discipline. Become Unbreakable.', 'I am {n} days strong with Iron Will. Build Discipline. Become Unbreakable.');
     try {
       if (navigator.share) {
         await navigator.share({ text, title: 'Iron Will' });
         return;
       }
       await navigator.clipboard.writeText(text);
-      toast.success('Progress copied', 'Only your day count is shared, nothing else.');
+      toast.success(tr("Progress copied"), tr("Only your day count is shared, nothing else."));
     } catch (err) {
-      if ((err as Error)?.name !== 'AbortError') toast.error('Could not share', 'Your browser blocked sharing.');
+      if ((err as Error)?.name !== 'AbortError') toast.error(tr("Could not share"), tr("Your browser blocked sharing."));
     }
   };
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Progress" subtitle="Your live timer, milestones and attempt history." />
+      <PageHeader title={tr("Progress")} subtitle={tr("Your live timer, milestones and attempt history.")} />
 
       {startedAt == null ? (
         <Card className="px-6 py-4">
           <EmptyState
             icon={<Play className="h-7 w-7" />}
-            title="Timer not started"
-            text="Start the timer now, or choose a past date and time if you already began."
+            title={tr("Timer not started")}
+            text={tr("Start the timer now, or choose a past date and time if you already began.")}
             action={
               <Button variant="primary" icon={<Play className="h-4 w-4" />} onClick={() => setModal('start')}>
-                Start timer
+                {tr("Start timer")}
               </Button>
             }
           />
@@ -80,18 +81,18 @@ export default function ProgressPage() {
               <LiveTimer startedAt={startedAt} />
               <MilestoneSummary startedAt={startedAt} milestones={milestones} />
               <div className="rounded-2xl border border-line bg-surface2/50 px-4 py-3 text-sm">
-                <span className="text-muted">Started </span>
+                <span className="text-muted">{tr("Started")} </span>
                 <span className="font-semibold">{formatDate(startedAt, true)}</span>
               </div>
               <Button variant="outline" full icon={<Share2 className="h-4 w-4" />} onClick={() => void shareProgress()}>
-                Share my progress
+                {tr("Share my progress")}
               </Button>
               <div className="grid grid-cols-2 gap-3">
                 <Button variant="secondary" icon={<CalendarClock className="h-4 w-4" />} onClick={() => setModal('edit')}>
-                  Edit start
+                  {tr("Edit start")}
                 </Button>
                 <Button variant="danger" icon={<RotateCcw className="h-4 w-4" />} onClick={() => setModal('reset')}>
-                  Reset
+                  {tr("Reset")}
                 </Button>
               </div>
             </div>
@@ -100,7 +101,7 @@ export default function ProgressPage() {
       )}
 
       <section>
-        <SectionTitle title="Statistics" />
+        <SectionTitle title={tr("Statistics")} />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { label: 'Current streak', value: formatDurationShort(stats.currentMs) },
@@ -110,14 +111,14 @@ export default function ProgressPage() {
           ].map((s) => (
             <Card key={s.label} className="!p-4">
               <div className="tabular text-xl font-extrabold">{s.value}</div>
-              <div className="mt-1 text-xs text-muted">{s.label}</div>
+              <div className="mt-1 text-xs text-muted">{tr(s.label)}</div>
             </Card>
           ))}
         </div>
       </section>
 
       <section>
-        <SectionTitle title="Milestones" />
+        <SectionTitle title={tr("Milestones")} />
         <Card padded={false}>
           <ul className="divide-y divide-line">
             {milestones.map((m) => {
@@ -128,11 +129,11 @@ export default function ProgressPage() {
                   {done ? <CheckCircle2 className="h-6 w-6 shrink-0 text-success" /> : <Circle className="h-6 w-6 shrink-0 text-muted/50" />}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className={cn('truncate font-semibold', !done && 'text-ink/90')}>{m.title}</span>
-                      {m.custom && <span className="rounded-full bg-accent/12 px-2 py-0.5 text-[10px] font-semibold text-accent">Custom</span>}
+                      <span className={cn('truncate font-semibold', !done && 'text-ink/90')}>{tr(m.title)}</span>
+                      {m.custom && <span className="rounded-full bg-accent/12 px-2 py-0.5 text-[10px] font-semibold text-accent">{tr("Custom")}</span>}
                     </div>
                     <div className="text-xs text-muted">
-                      {m.days} {m.days === 1 ? 'day' : 'days'}
+                      {m.days} {m.days === 1 ? tr("day") : tr("days")}
                       {!done && startedAt != null && ` · ${Math.floor(frac * 100)}%`}
                     </div>
                     {!done && startedAt != null && (
@@ -142,7 +143,7 @@ export default function ProgressPage() {
                     )}
                   </div>
                   {m.custom && (
-                    <button aria-label={`Remove ${m.title}`} onClick={() => void removeMilestone(m.id).catch(() => undefined)} className="flex h-10 w-10 items-center justify-center rounded-full text-muted hover:bg-surface2 hover:text-danger">
+                    <button aria-label={tr('Remove {title}', { title: tr(m.title) })} onClick={() => void removeMilestone(m.id).catch(() => undefined)} className="flex h-10 w-10 items-center justify-center rounded-full text-muted hover:bg-surface2 hover:text-danger">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   )}
@@ -154,38 +155,38 @@ export default function ProgressPage() {
         </Card>
         <Card className="mt-3">
           <form onSubmit={submitMilestone} className="space-y-3">
-            <h3 className="text-sm font-semibold">Add a custom milestone</h3>
+            <h3 className="text-sm font-semibold">{tr("Add a custom milestone")}</h3>
             <div className="grid grid-cols-5 gap-3">
               <div className="col-span-2">
-                <Field label="Days">
+                <Field label={tr("Days")}>
                   <TextInput inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value.replace(/\D/g, '').slice(0, 5))} placeholder="45" required />
                 </Field>
               </div>
               <div className="col-span-3">
-                <Field label="Title">
-                  <TextInput value={title} onChange={(e) => setTitle(e.target.value)} maxLength={40} placeholder="My big goal" />
+                <Field label={tr("Title")}>
+                  <TextInput value={title} onChange={(e) => setTitle(e.target.value)} maxLength={40} placeholder={tr("My big goal")} />
                 </Field>
               </div>
             </div>
             <Button type="submit" variant="secondary" icon={<Plus className="h-4 w-4" />}>
-              Add milestone
+              {tr("Add milestone")}
             </Button>
           </form>
         </Card>
       </section>
 
       <section>
-        <SectionTitle title="Attempt history" />
+        <SectionTitle title={tr("Attempt history")} />
         <Card padded={false}>
           {attempts.length === 0 && startedAt == null ? (
-            <EmptyState icon={<History className="h-7 w-7" />} title="No attempts yet" text="When you reset, the finished attempt is saved here. Nothing is ever lost." />
+            <EmptyState icon={<History className="h-7 w-7" />} title={tr("No attempts yet")} text={tr("When you reset, the finished attempt is saved here. Nothing is ever lost.")} />
           ) : (
             <ul className="divide-y divide-line">
               {startedAt != null && (
                 <li className="flex items-center justify-between gap-3 px-5 py-3.5">
                   <div>
-                    <div className="font-semibold">Current attempt</div>
-                    <div className="text-xs text-muted">Since {formatDate(startedAt, true)}</div>
+                    <div className="font-semibold">{tr("Current attempt")}</div>
+                    <div className="text-xs text-muted">{tr("Since")} {formatDate(startedAt, true)}</div>
                   </div>
                   <span className="rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">{formatDurationLong(now - startedAt)}</span>
                 </li>
@@ -194,7 +195,7 @@ export default function ProgressPage() {
                 <li key={a.id} className="px-5 py-3.5">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="truncate font-semibold">Attempt #{a.id}{a.habitName ? ` · ${a.habitName}` : ''}</div>
+                      <div className="truncate font-semibold">{tr('Attempt #{n}', { n: a.id ?? 0 })}{a.habitName ? ` · ${a.habitName}` : ''}</div>
                       <div className="text-xs text-muted">
                         {formatDate(a.startedAt)} → {formatDate(a.endedAt)}
                       </div>

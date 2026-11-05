@@ -3,13 +3,14 @@ import { MS_DAY } from '@/data/constants';
 import { DEFAULT_MILESTONES } from '@/data/milestones';
 import type { AchievementRecord, CustomMilestone, Milestone } from '@/types';
 import { sanitizeText } from '@/utils/sanitize';
+import { tr } from '@/i18n';
 
 export function buildMilestones(custom: CustomMilestone[]): Milestone[] {
   const extra: Milestone[] = custom.map((c) => ({
     id: c.id,
     days: c.days,
     title: c.title,
-    description: `Your personal ${c.days}-day milestone.`,
+    description: tr('Your personal {n}-day milestone.', { n: c.days }),
     custom: true,
   }));
   return [...DEFAULT_MILESTONES, ...extra]
@@ -27,11 +28,11 @@ export async function listCustomMilestones(): Promise<CustomMilestone[]> {
 
 export async function addCustomMilestone(days: number, title: string): Promise<CustomMilestone> {
   const d = Math.floor(days);
-  if (!Number.isFinite(d) || d < 1 || d > 10000) throw new Error('Enter a number of days between 1 and 10,000.');
-  const clean = sanitizeText(title, 40) || `${d}-Day Goal`;
+  if (!Number.isFinite(d) || d < 1 || d > 10000) throw new Error(tr("Enter a number of days between 1 and 10,000."));
+  const clean = sanitizeText(title, 40) || tr('{n}-Day Goal', { n: d });
   const existing = await listCustomMilestones();
   if (existing.some((m) => m.days === d) || DEFAULT_MILESTONES.some((m) => m.days === d)) {
-    throw new Error('A milestone for that many days already exists.');
+    throw new Error(tr("A milestone for that many days already exists."));
   }
   const record: CustomMilestone = { id: `c-${d}`, days: d, title: clean, createdAt: Date.now() };
   await safe(() => db.milestones.put(record));

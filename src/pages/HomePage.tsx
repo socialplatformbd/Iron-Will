@@ -12,6 +12,7 @@ import { QuoteCard } from '@/components/QuoteCard';
 import { TreePreviewCard } from '@/components/TreePreviewCard';
 import { MoneySavedCard } from '@/components/MoneySavedCard';
 import { RecentAchievements } from '@/components/RecentAchievements';
+import { CheckInCard } from '@/components/CheckInCard';
 import { InstallBanner } from '@/components/InstallBanner';
 import { StartTimerModal } from '@/components/StartTimerModal';
 import { ProfileModal } from '@/components/ProfileModal';
@@ -19,6 +20,7 @@ import { useApp } from '@/context/AppContext';
 import { greetingFor } from '@/utils/time';
 import { APP_TAGLINE } from '@/data/constants';
 
+import { tr } from '@/i18n';
 export default function HomePage() {
   const { startedAt, milestones, profile } = useApp();
   const [startOpen, setStartOpen] = useState(false);
@@ -30,7 +32,7 @@ export default function HomePage() {
         <div className="min-w-0">
           <p className="text-sm text-muted">{greetingFor()}</p>
           <h1 className="truncate text-2xl font-extrabold tracking-tight sm:text-3xl">
-            {profile.habitName ? `Quitting ${profile.habitName.toLowerCase()}` : 'Your journey'}
+            {profile.habitName ? tr('Quitting {habit}', { habit: profile.habitName.toLowerCase() }) : tr("Your journey")}
           </h1>
         </div>
         <Logo size={44} className="lg:hidden" />
@@ -41,10 +43,10 @@ export default function HomePage() {
       {startedAt == null ? (
         <Card glow className="px-6 py-10 text-center">
           <Logo size={72} className="mx-auto mb-5" />
-          <h2 className="text-2xl font-extrabold tracking-tight">Ready to begin?</h2>
-          <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-muted">{APP_TAGLINE} Start your timer now, or set the date you actually began.</p>
+          <h2 className="text-2xl font-extrabold tracking-tight">{tr("Ready to begin?")}</h2>
+          <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-muted">{tr(APP_TAGLINE)} {tr("Start your timer now, or set the date you actually began.")}</p>
           <Button variant="primary" size="lg" className="mt-6" icon={<Play className="h-5 w-5" />} onClick={() => setStartOpen(true)}>
-            Start my journey
+            {tr("Start my journey")}
           </Button>
         </Card>
       ) : (
@@ -57,7 +59,7 @@ export default function HomePage() {
               <LiveTimer startedAt={startedAt} />
               <MilestoneSummary startedAt={startedAt} milestones={milestones} />
               <Link to="/progress" className="flex items-center justify-center gap-1 text-sm font-semibold text-accent">
-                Manage timer &amp; milestones <ChevronRight className="h-4 w-4" />
+                {tr("Manage timer & milestones")} <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -71,8 +73,8 @@ export default function HomePage() {
         >
           <Siren className="h-7 w-7" />
           <div>
-            <div className="text-base font-bold leading-tight">Emergency</div>
-            <div className="text-xs text-white/80">Craving right now? Tap here.</div>
+            <div className="text-base font-bold leading-tight">{tr("Emergency")}</div>
+            <div className="text-xs text-white/80">{tr("Craving right now? Tap here.")}</div>
           </div>
         </Link>
         <Link
@@ -81,8 +83,8 @@ export default function HomePage() {
         >
           <Target className="h-7 w-7 text-accent" />
           <div>
-            <div className="text-base font-bold leading-tight">Focus Mode</div>
-            <div className="text-xs text-muted">Distraction-free timer</div>
+            <div className="text-base font-bold leading-tight">{tr("Focus Mode")}</div>
+            <div className="text-xs text-muted">{tr("Distraction-free timer")}</div>
           </div>
         </Link>
       </div>
@@ -90,20 +92,22 @@ export default function HomePage() {
       <div className="grid grid-cols-3 gap-3">
         <Link to="/coach" className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-3xl border border-line bg-surface p-3 text-center transition active:scale-[0.98] hover:border-accent/40">
           <Bot className="h-6 w-6 text-accent" />
-          <div className="text-sm font-bold leading-tight">Coach</div>
-          <div className="text-[11px] leading-tight text-muted">Guidance</div>
+          <div className="text-sm font-bold leading-tight">{tr("Coach")}</div>
+          <div className="text-[11px] leading-tight text-muted">{tr("Guidance")}</div>
         </Link>
         <Link to="/history" className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-3xl border border-line bg-surface p-3 text-center transition active:scale-[0.98] hover:border-accent/40">
           <BarChart3 className="h-6 w-6 text-accent" />
-          <div className="text-sm font-bold leading-tight">History</div>
-          <div className="text-[11px] leading-tight text-muted">Insights</div>
+          <div className="text-sm font-bold leading-tight">{tr("History")}</div>
+          <div className="text-[11px] leading-tight text-muted">{tr("Insights")}</div>
         </Link>
         <Link to="/letters" className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-3xl border border-line bg-surface p-3 text-center transition active:scale-[0.98] hover:border-accent/40">
           <Mail className="h-6 w-6 text-accent" />
-          <div className="text-sm font-bold leading-tight">Letters</div>
-          <div className="text-[11px] leading-tight text-muted">To future me</div>
+          <div className="text-sm font-bold leading-tight">{tr("Letters")}</div>
+          <div className="text-[11px] leading-tight text-muted">{tr("To future me")}</div>
         </Link>
       </div>
+
+      <CheckInCard />
 
       <StatTiles />
 

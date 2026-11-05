@@ -1,4 +1,5 @@
 import { APP_NAME, APP_TAGLINE } from '@/data/constants';
+import { tr, trn } from '@/i18n';
 
 /** Draws a shareable badge image. Only the badge title and day count appear: no personal data. */
 export async function renderBadgeCard(title: string, days: number): Promise<Blob> {
@@ -7,7 +8,7 @@ export async function renderBadgeCard(title: string, days: number): Promise<Blob
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Your browser cannot draw images.');
+  if (!ctx) throw new Error(tr("Your browser cannot draw images."));
 
   const css = getComputedStyle(document.documentElement);
   const accent = css.getPropertyValue('--accent').trim() || '#f59e0b';
@@ -65,10 +66,10 @@ export async function renderBadgeCard(title: string, days: number): Promise<Blob
   ctx.fillText(APP_NAME.toUpperCase(), size / 2, 930);
   ctx.fillStyle = '#9b99aa';
   ctx.font = `500 30px ${font}`;
-  ctx.fillText(APP_TAGLINE, size / 2, 980);
+  ctx.fillText(tr(APP_TAGLINE), size / 2, 980);
 
   return new Promise((resolve, reject) => {
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not create the image.'))), 'image/png');
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error(tr("Could not create the image.")))), 'image/png');
   });
 }
 
@@ -77,7 +78,7 @@ export async function shareBadgeCard(title: string, days: number): Promise<'shar
   const blob = await renderBadgeCard(title, days);
   const file = new File([blob], `iron-will-${days}-days.png`, { type: 'image/png' });
   if (navigator.canShare?.({ files: [file] })) {
-    await navigator.share({ files: [file], title: 'Iron Will', text: `${title} · ${days} ${days === 1 ? 'day' : 'days'} with Iron Will` });
+    await navigator.share({ files: [file], title: 'Iron Will', text: trn(days, '{title} · {n} day with Iron Will', '{title} · {n} days with Iron Will', { title }) });
     return 'shared';
   }
   const url = URL.createObjectURL(blob);

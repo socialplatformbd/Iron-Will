@@ -21,3 +21,7 @@
 - [ ] Write a letter for Day 1, check it is locked, then confirm a Day "any time" letter opens.
 - [ ] Share an earned badge and check the image looks right.
 - [ ] Long-press the installed icon and confirm the shortcuts appear.
+- [ ] Switch Settings -> Language to বাংলা; walk through Home, Progress, Journal, Emergency, Coach, Letters, History, Settings and look for English leftovers or text that is cut off.
+- [ ] Tap "I stayed strong today", reload, and confirm the check-in is kept; tap again to undo.
+- [ ] Open History and confirm the Weekly report numbers look right.
+- [ ] Update over an existing install and confirm earlier data (journal, letters, timer) is still there.

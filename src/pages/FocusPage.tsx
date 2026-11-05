@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { BackLink } from '@/components/ui/BackLink';
 import { useToast } from '@/components/ui/Toast';
 
+import { tr } from '@/i18n';
 const options = [5, 10, 15, 25, 30];
 
 export default function FocusPage() {
@@ -32,7 +33,7 @@ export default function FocusPage() {
         if (startedAt !== null) {
           db.focusSessions
             .add({ startedAt, endedAt: Date.now(), durationSeconds: minutes * 60, completed: true })
-            .catch((err: unknown) => toast.error('Could not save this session', (err as Error).message));
+            .catch((err: unknown) => toast.error(tr("Could not save this session"), (err as Error).message));
           try {
             navigator.vibrate?.([200, 100, 200]);
           } catch {
@@ -94,17 +95,17 @@ export default function FocusPage() {
 
   return <div className="space-y-5">
     <BackLink />
-    <PageHeader title="Focus Mode" subtitle="Give your attention to one useful thing at a time." />
+    <PageHeader title={tr("Focus Mode")} subtitle={tr("Give your attention to one useful thing at a time.")} />
     <Card className="text-center">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-accent"><Timer /></div>
-      <h2 className="mt-3 font-semibold">Choose a session</h2>
-      <div className="mt-4 flex flex-wrap justify-center gap-2">{options.map(n => <button key={n} disabled={running} onClick={() => { setMinutes(n); remainingRef.current = n * 60; setRemaining(n * 60); setDone(false); setStartedAt(null); completedRef.current = false; }} className={`rounded-xl px-4 py-2 text-sm font-semibold ${minutes === n ? 'bg-accent text-onaccent' : 'bg-surface2 text-muted'}`}>{n} min</button>)}</div>
+      <h2 className="mt-3 font-semibold">{tr("Choose a session")}</h2>
+      <div className="mt-4 flex flex-wrap justify-center gap-2">{options.map(n => <button key={n} disabled={running} onClick={() => { setMinutes(n); remainingRef.current = n * 60; setRemaining(n * 60); setDone(false); setStartedAt(null); completedRef.current = false; }} className={`rounded-xl px-4 py-2 text-sm font-semibold ${minutes === n ? 'bg-accent text-onaccent' : 'bg-surface2 text-muted'}`}>{n} {tr("min")}</button>)}</div>
       <div className="relative mx-auto my-7 flex h-56 w-56 items-center justify-center rounded-full" style={{ background: `conic-gradient(var(--accent) ${progress * 360}deg, var(--line) 0deg)` }}>
-        <div className="flex h-48 w-48 flex-col items-center justify-center rounded-full bg-surface"><span className="text-5xl font-black tabular-nums">{mm}:{String(ss).padStart(2, '0')}</span><span className="mt-1 text-xs text-muted">{running ? 'Stay focused' : 'Ready when you are'}</span></div>
+        <div className="flex h-48 w-48 flex-col items-center justify-center rounded-full bg-surface"><span className="text-5xl font-black tabular-nums">{mm}:{String(ss).padStart(2, '0')}</span><span className="mt-1 text-xs text-muted">{running ? tr("Stay focused") : tr("Ready when you are")}</span></div>
       </div>
-      <div className="flex justify-center gap-2"><Button onClick={() => running ? pause() : start()}>{running ? <><Pause className="mr-1 h-4 w-4" />Pause</> : <><Play className="mr-1 h-4 w-4" />{done ? 'Start again' : remaining < minutes * 60 ? 'Resume focus' : 'Start focus'}</>}</Button><Button variant="secondary" onClick={reset}><RotateCcw className="mr-1 h-4 w-4" />Reset</Button></div>
-      {done && <p className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-success"><CheckCircle2 className="h-4 w-4" />Session completed. Well done!</p>}
+      <div className="flex justify-center gap-2"><Button onClick={() => running ? pause() : start()}>{running ? <><Pause className="mr-1 h-4 w-4" />{tr("Pause")}</> : <><Play className="mr-1 h-4 w-4" />{done ? tr("Start again") : remaining < minutes * 60 ? tr("Resume focus") : tr("Start focus")}</>}</Button><Button variant="secondary" onClick={reset}><RotateCcw className="mr-1 h-4 w-4" />{tr("Reset")}</Button></div>
+      {done && <p className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-success"><CheckCircle2 className="h-4 w-4" />{tr("Session completed. Well done!")}</p>}
     </Card>
-    <Card><h3 className="font-semibold">A simple focus plan</h3><ol className="mt-3 list-inside list-decimal space-y-2 text-sm text-muted"><li>Choose one small task.</li><li>Put away distractions if possible.</li><li>Work until the timer ends. Take a short break afterward.</li></ol></Card>
+    <Card><h3 className="font-semibold">{tr("A simple focus plan")}</h3><ol className="mt-3 list-inside list-decimal space-y-2 text-sm text-muted"><li>{tr("Choose one small task.")}</li><li>{tr("Put away distractions if possible.")}</li><li>{tr("Work until the timer ends. Take a short break afterward.")}</li></ol></Card>
   </div>;
 }
